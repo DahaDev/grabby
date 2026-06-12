@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self'">
+<title>grabby</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Mac uses hiddenInset title bar, so we add padding for the traffic-light controls. -->
+<div class="titlebar-spacer"></div>
+
+<!-- Update banner — hidden until the auto-updater fires an event. -->
+<div id="update-banner" class="update-banner hidden">
+  <div class="update-banner-inner">
+    <span class="update-text" id="update-text">A new version of Grabby is available.</span>
+    <div class="update-actions" id="update-actions">
+      <button id="update-download-btn" class="update-btn primary" type="button">Download</button>
+      <button id="update-dismiss-btn" class="update-btn ghost" type="button">Later</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">grabby<span class="dot">.</span></div>
+    <div class="header-actions">
+      <button id="settings-btn" class="ghost-btn" type="button">Settings</button>
+      <button id="open-folder-btn" class="ghost-btn" type="button">Folder</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Paste a link.<br>Get the <em>file</em>.</h1>
+    <p>Local desktop downloader. Nothing leaves your machine.</p>
+  </section>
+
+  <div class="url-row">
+    <input id="url" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false" autofocus>
+    <button id="probe-btn">Fetch</button>
+  </div>
+
+  <div class="platforms">
+    <span class="lbl">Supports —</span>
+    <span>YouTube</span>
+    <span>Instagram</span>
+    <span>TikTok</span>
+    <span>Snapchat</span>
+    <span>+ 1000 more</span>
+  </div>
+
+  <div id="alert" class="alert hidden"></div>
+
+  <div id="result" class="card hidden">
+    <div class="card-head">
+      <img id="thumb" class="thumb" alt="">
+      <div>
+        <div id="platform-tag" class="platform-tag"></div>
+        <h2 id="vid-title" class="vid-title"></h2>
+        <div id="vid-meta" class="vid-meta"></div>
+        <div id="playlist-banner" class="playlist-banner hidden">
+          <label>
+            <input type="checkbox" id="dl-playlist">
+            <span>This is part of a playlist (<span id="playlist-count">?</span> videos). Download the whole playlist?</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="formats">
+      <h3>Choose quality</h3>
+      <div id="format-list" class="format-list"></div>
+      <button id="dl-btn" class="dl-btn">Download</button>
+    </div>
+  </div>
+
+  <section class="jobs">
+    <h2>Activity</h2>
+    <div id="jobs-list"></div>
+  </section>
+
+  <footer>
+    <span>For personal use. Respect copyright &amp; platform terms.</span>
+    <span>Built on yt-dlp · <span id="app-version">v?</span></span>
+  </footer>
+
+</div>
+
+<!-- Settings modal -->
+<div id="settings-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head">
+      <h2>Settings</h2>
+      <button id="settings-close" class="ghost-btn">Close</button>
+    </header>
+
+    <div class="setting">
+      <label>Download folder</label>
+      <div class="setting-row">
+        <code id="download-dir-display">—</code>
+        <button id="pick-dir-btn" class="ghost-btn" type="button">Change…</button>
+      </div>
+    </div>
+
+    <div class="setting">
+      <label>Use cookies from browser</label>
+      <p class="setting-help">Lets grabby download private/age-restricted videos using your browser session. Pick the browser you're logged into the source platform with.</p>
+      <select id="cookies-browser">
+        <option value="none">None</option>
+        <option value="chrome">Chrome</option>
+        <option value="firefox">Firefox</option>
+        <option value="safari">Safari</option>
+        <option value="edge">Edge</option>
+        <option value="brave">Brave</option>
+      </select>
+    </div>
+
+    <div class="setting">
+      <label class="checkbox-row">
+        <input type="checkbox" id="skip-unavailable">
+        <span>Skip unavailable videos in playlists (private, region-blocked, deleted)</span>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

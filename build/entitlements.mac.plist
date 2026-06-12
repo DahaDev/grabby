@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Mac entitlements for grabby.
+
+  Hardened Runtime is required for notarization. By default it locks down
+  almost everything — we need to opt back in to the few things grabby needs:
+
+  - allow-jit + allow-unsigned-executable-memory: needed because Electron's
+    V8 JavaScript engine uses JIT compilation. Without these the app
+    will crash on launch.
+  - allow-dyld-environment-variables: helps with some Electron internals.
+  - cs.disable-library-validation: lets us spawn the bundled yt-dlp and
+    ffmpeg binaries. Apple's library validation would otherwise refuse to
+    load them since they weren't signed with our certificate.
+
+  We do NOT enable network-server, files-user-selected, files-downloads,
+  etc. — those are App Sandbox entitlements, not relevant outside the
+  App Store. For direct distribution, the absence of the sandbox entitlement
+  means the app runs without sandboxing (normal for non-store apps).
+-->
+<plist version="1.0">
+<dict>
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+  <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+  <true/>
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
+</dict>
+</plist>

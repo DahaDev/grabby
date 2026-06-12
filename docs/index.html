@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grabby — paste a link, get the file</title>
+<meta name="description" content="Free desktop app to download videos from YouTube, Instagram, TikTok, Snapchat, and 1000+ other sites. Local-only. No ads. No tracking.">
+<meta property="og:title" content="Grabby">
+<meta property="og:description" content="Paste a link. Get the file. Local-only video downloader.">
+<meta property="og:image" content="icon.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon-rounded.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --bg-card: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #6b6b6b;
+    --rule: #d9d4c7;
+    --accent: #ff4f1f;
+    --accent-soft: #ffe5db;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14130f;
+      --bg-card: #1f1e1a;
+      --ink: #f0ece1;
+      --ink-soft: #8a8678;
+      --rule: #2e2c25;
+      --accent: #ff6a3d;
+      --accent-soft: #3d1d12;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(0,0,0,0.018), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(0,0,0,0.018), transparent 40%);
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* ----- Nav ----- */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 80px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 28px;
+    font-style: italic;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .brand .dot { color: var(--accent); }
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    text-decoration: none;
+    margin-left: 28px;
+  }
+  nav a:hover { color: var(--accent); }
+
+  /* ----- Hero ----- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 96px;
+  }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; gap: 32px; } .icon-img { order: -1; max-width: 140px; } }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(44px, 7vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    margin: 0 0 24px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 900;
+    color: var(--accent);
+  }
+  .hero .lede {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--ink-soft);
+    max-width: 480px;
+    margin: 0 0 36px;
+    line-height: 1.55;
+  }
+  .icon-img {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 22.5%;
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.06),
+      0 30px 60px -20px rgba(255,79,31,0.35),
+      0 18px 30px -10px rgba(0,0,0,0.18);
+  }
+
+  /* ----- Download buttons ----- */
+  .downloads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: var(--ink);
+    color: var(--bg);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    border: 1px solid var(--ink);
+  }
+  .dl-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .dl-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .dl-btn .label-sub {
+    display: block;
+    font-size: 9px;
+    font-weight: 500;
+    opacity: 0.7;
+    margin-top: 2px;
+    letter-spacing: 0.2em;
+  }
+  .download-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+  }
+  .download-meta a { color: var(--accent); text-decoration: none; }
+  .download-meta a:hover { text-decoration: underline; }
+
+  /* ----- Section headings ----- */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+  h2.section-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 0 64px;
+    max-width: 700px;
+  }
+  h2.section-title em { font-style: italic; font-weight: 900; color: var(--accent); }
+
+  /* ----- Features ----- */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 32px;
+    margin-bottom: 96px;
+  }
+  .feature {
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .feature h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+  }
+  .feature p {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .feature .num {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 14px;
+  }
+
+  /* ----- Platform pills ----- */
+  .platforms-section { margin-bottom: 96px; }
+  .platform-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .platform-pill {
+    padding: 10px 18px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+  .platform-pill.featured {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ----- FAQ ----- */
+  .faq { margin-bottom: 96px; }
+  details {
+    border-top: 1px solid var(--rule);
+    padding: 24px 0;
+  }
+  details:last-child { border-bottom: 1px solid var(--rule); }
+  summary {
+    cursor: pointer;
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    list-style: none;
+    position: relative;
+    padding-right: 30px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 24px;
+    line-height: 0;
+  }
+  details[open] summary::after { content: "−"; }
+  details p {
+    font-family: var(--serif);
+    color: var(--ink-soft);
+    margin: 16px 0 0;
+    line-height: 1.6;
+  }
+  details p code {
+    background: var(--rule);
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* ----- Footer ----- */
+  footer {
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <nav>
+    <div class="brand">grabby<span class="dot">.</span></div>
+    <div>
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/DahaDev/grabby" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Paste a link.<br>Get the <em>file</em>.</h1>
+      <p class="lede">A free, local-only desktop app for downloading videos. No ads. No tracking. No web servers. Just paste a link and save the file.</p>
+      <div class="downloads">
+        <a id="mac-dl" class="dl-btn" href="https://github.com/DahaDev/grabby/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01M12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          <span>Download for Mac<span class="label-sub">macOS 10.13+</span></span>
+        </a>
+        <a id="win-dl" class="dl-btn" href="https://github.com/DahaDev/grabby/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.475L9.84 4.53v6.61H3V5.475zm0 13.05l6.84.945v-6.555H3v5.61zm7.59 1.05L21 21V12.99H10.59v6.585zm0-15.13V11.16H21V3.07L10.59 4.445z"/></svg>
+          <span>Download for Windows<span class="label-sub">Windows 10+</span></span>
+        </a>
+      </div>
+      <div class="download-meta">
+        Free &amp; open source · <a id="version-link" href="https://github.com/DahaDev/grabby/releases" target="_blank" rel="noopener">View all releases</a>
+      </div>
+    </div>
+    <img src="icon-rounded.png" alt="Grabby app icon" class="icon-img" width="200" height="200">
+  </section>
+
+  <section id="features">
+    <div class="section-label">Why grabby</div>
+    <h2 class="section-title">Built for people, not for <em>scale</em>.</h2>
+
+    <div class="features">
+      <div class="feature">
+        <span class="num">01</span>
+        <h3>Runs on your machine</h3>
+        <p>No web servers. No accounts. No data leaves your computer. The video downloads directly to a folder you choose.</p>
+      </div>
+      <div class="feature">
+        <span class="num">02</span>
+        <h3>No ads, no tracking</h3>
+        <p>Free and open source. Source code on GitHub. There's nothing to monetize because there's no one between you and your file.</p>
+      </div>
+      <div class="feature">
+        <span class="num">03</span>
+        <h3>Quality your way</h3>
+        <p>Pick the resolution. Extract MP3 audio. Download a single video or a whole playlist. All in one app.</p>
+      </div>
+      <div class="feature">
+        <span class="num">04</span>
+        <h3>Auto-updates</h3>
+        <p>When platforms change their APIs and downloads break, grabby updates itself in the background. You always have a working version.</p>
+      </div>
+      <div class="feature">
+        <span class="num">05</span>
+        <h3>Cookies from browser</h3>
+        <p>Use your existing browser session to download age-restricted, members-only, or private content you have access to.</p>
+      </div>
+      <div class="feature">
+        <span class="num">06</span>
+        <h3>Built on yt-dlp</h3>
+        <p>The most battle-tested video extraction engine on the internet. Supports 1000+ sites, not just the big ones.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="platforms-section">
+    <div class="section-label">Supports</div>
+    <h2 class="section-title">Every site that <em>matters</em>.</h2>
+    <div class="platform-grid">
+      <span class="platform-pill featured">YouTube</span>
+      <span class="platform-pill featured">Instagram</span>
+      <span class="platform-pill featured">TikTok</span>
+      <span class="platform-pill featured">Snapchat</span>
+      <span class="platform-pill">Twitter / X</span>
+      <span class="platform-pill">Reddit</span>
+      <span class="platform-pill">Vimeo</span>
+      <span class="platform-pill">Twitch</span>
+      <span class="platform-pill">Facebook</span>
+      <span class="platform-pill">Dailymotion</span>
+      <span class="platform-pill">SoundCloud</span>
+      <span class="platform-pill">Bilibili</span>
+      <span class="platform-pill">+ 1000 more</span>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <div class="section-label">Questions</div>
+    <h2 class="section-title">The <em>honest</em> answers.</h2>
+
+    <details>
+      <summary>Is this legal?</summary>
+      <p>Grabby is a tool, like a video player or a web browser. What you do with it is up to you. Downloading content you have the rights to — your own posts, public-domain or Creative Commons material, or content for personal offline viewing in jurisdictions where that's permitted — is fine. Downloading copyrighted content without permission may violate the source platform's terms of service and the copyright law in your country. You're responsible for how you use this tool.</p>
+    </details>
+
+    <details>
+      <summary>Why is the first launch showing a security warning?</summary>
+      <p>Grabby isn't code-signed yet (Apple Developer certificates cost $99/year). On Mac, right-click the app and choose <strong>Open</strong> the first time. On Windows, click <strong>More info</strong> → <strong>Run anyway</strong>. After the first launch, your OS will trust the app.</p>
+    </details>
+
+    <details>
+      <summary>What does it cost?</summary>
+      <p>Nothing. Grabby is free and the source code is on GitHub. There are no ads. There's no tracking. There's no in-app purchase. If that changes someday — for example, an optional Pro version with cloud features — it'll be announced clearly and the basic local version will remain free.</p>
+    </details>
+
+    <details>
+      <summary>Why does YouTube sometimes fail?</summary>
+      <p>YouTube periodically changes its internal APIs to break video downloaders. The community-maintained <code>yt-dlp</code> engine that powers Grabby usually pushes a fix within days. Grabby's auto-updater means you'll get the fix on next launch.</p>
+    </details>
+
+    <details>
+      <summary>Can I download Snapchat stories?</summary>
+      <p>Only public Snapchat Spotlight videos. Stories and private Snaps are end-to-end-ish and ephemeral by design — no tool can reliably download those. We're not pretending otherwise.</p>
+    </details>
+
+    <details>
+      <summary>Does it support 4K?</summary>
+      <p>Yes, where the source platform provides it. The default quality selector preferentially picks H.264 codecs for compatibility with QuickTime and Windows Media Player; you can also pick higher-quality VP9 / AV1 streams manually if you have a modern video player like VLC.</p>
+    </details>
+
+    <details>
+      <summary>What data does Grabby collect?</summary>
+      <p>None. There's no analytics, no telemetry, no crash reporting. The only network traffic the app makes is to (a) the video host you paste a link from, and (b) GitHub's release API for auto-update checks. You can verify this — the source code is public.</p>
+    </details>
+  </section>
+
+  <footer>
+    <span>Made by Daha · Free &amp; open source</span>
+    <span><a href="https://github.com/DahaDev/grabby" target="_blank" rel="noopener">Source on GitHub</a></span>
+  </footer>
+
+</div>
+
+<script>
+  // Try to fetch the latest release and update the download buttons with
+  // direct asset links. Falls back to the generic /releases/latest page
+  // if the API call fails (rate-limited, offline, etc).
+  (async function tryFetchLatest() {
+    const REPO = 'DahaDev/grabby';
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+      if (!res.ok) return;
+      const release = await res.json();
+
+      // Detect user platform to highlight the right download
+      const ua = navigator.userAgent.toLowerCase();
+      const isMac = /mac/.test(ua);
+      const isWin = /windows/.test(ua);
+
+      const mac = release.assets.find(a => /-mac-(arm64|x64).*\.dmg$/.test(a.name)
+                                          && (isMac && navigator.userAgent.includes('ARM') ? a.name.includes('arm64') : true));
+      const win = release.assets.find(a => /-win-x64.*\.exe$/.test(a.name));
+
+      if (mac) document.getElementById('mac-dl').href = mac.browser_download_url;
+      if (win) document.getElementById('win-dl').href = win.browser_download_url;
+
+      // Show version
+      document.getElementById('version-link').textContent = `${release.tag_name} · View all releases`;
+    } catch {}
+  })();
+</script>
+
+</body>
+</html>
