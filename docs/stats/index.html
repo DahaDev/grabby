@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Grabby — Stats</title>
+<link rel="icon" type="image/png" href="../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --bg-card: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #6b6b6b;
+    --rule: #d9d4c7;
+    --accent: #ff4f1f;
+    --accent-soft: #ffe5db;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14130f;
+      --bg-card: #1f1e1a;
+      --ink: #f0ece1;
+      --ink-soft: #8a8678;
+      --rule: #2e2c25;
+      --accent: #ff6a3d;
+      --accent-soft: #3d1d12;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* Nav */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 64px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 28px;
+    font-style: italic;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .brand .dot { color: var(--accent); }
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  nav a:hover { color: var(--accent); }
+
+  /* Section heading */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    display: block;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin: 0 0 80px;
+  }
+  h1 em { font-style: italic; font-weight: 900; color: var(--accent); }
+
+  /* Big number — the headline stat */
+  .headline {
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 48px 0;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+  .headline-num {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(96px, 18vw, 200px);
+    line-height: 0.9;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .headline-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-top: 12px;
+  }
+  .headline-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  /* Platform split */
+  .platforms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 80px;
+  }
+  @media (max-width: 600px) { .platforms { grid-template-columns: 1fr; } }
+  .platform {
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .platform-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .platform-num {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-style: italic;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .platform-detail {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+  .platform-detail span { display: block; }
+
+  /* By release */
+  h2.section-title {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 32px;
+  }
+  .release {
+    padding: 24px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .release-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .release-tag {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .release-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+  .release-total {
+    color: var(--accent);
+  }
+  .release-assets {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.9;
+  }
+  .release-assets .asset {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted var(--rule);
+    padding: 4px 0;
+  }
+  .release-assets .asset:last-child { border-bottom: 0; }
+  .asset-name { word-break: break-all; padding-right: 12px; }
+  .asset-count { font-weight: 700; color: var(--ink); }
+
+  /* Footer */
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+  }
+  footer button {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  footer button:hover { color: var(--accent); border-color: var(--accent); }
+  footer button:disabled { opacity: 0.4; cursor: wait; }
+
+  /* States */
+  .loading, .error {
+    text-align: center;
+    padding: 60px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .error { color: var(--accent); }
+  .hidden { display: none; }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: -2px;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <nav>
+    <div class="brand">grabby<span class="dot">.</span></div>
+    <a href="../">← Back to site</a>
+  </nav>
+
+  <span class="section-label">Stats</span>
+  <h1>Downloads <em>so far</em>.</h1>
+
+  <div id="loading" class="loading"><span class="spinner"></span>Fetching from GitHub…</div>
+  <div id="error" class="error hidden"></div>
+
+  <div id="content" class="hidden">
+
+    <div class="headline">
+      <div class="headline-num" id="total">0</div>
+      <div class="headline-label">Total installer downloads</div>
+      <div class="headline-sub">Counts .dmg + .exe only — excludes auto-update traffic</div>
+    </div>
+
+    <div class="platforms">
+      <div class="platform">
+        <div class="platform-name">macOS</div>
+        <div class="platform-num" id="mac-num">0</div>
+        <div class="platform-detail" id="mac-detail"></div>
+      </div>
+      <div class="platform">
+        <div class="platform-name">Windows</div>
+        <div class="platform-num" id="win-num">0</div>
+        <div class="platform-detail" id="win-detail"></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">By release</h2>
+    <div id="release-list"></div>
+
+  </div>
+
+  <footer>
+    <span>Updated <span id="updated">—</span></span>
+    <button id="refresh-btn" type="button">Refresh</button>
+  </footer>
+
+</div>
+
+<script>
+  const REPO = 'DahaDev/grabby';
+
+  const $ = id => document.getElementById(id);
+
+  // Helpers --------------------------------------------------------------
+  function fmtNum(n) {
+    return n.toLocaleString('en-US');
+  }
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function fmtRelative(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = (now - d) / 1000;          // seconds
+    if (diff < 60)     return 'just now';
+    if (diff < 3600)   return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400)  return Math.floor(diff / 3600) + 'h ago';
+    return Math.floor(diff / 86400) + 'd ago';
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Animate a number rolling up from 0 — feels alive
+  function animateTo(el, target) {
+    const start = parseInt(el.textContent.replace(/,/g, '')) || 0;
+    if (start === target) return;
+    const duration = 600;
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = Math.round(start + (target - start) * eased);
+      el.textContent = fmtNum(val);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = fmtNum(target);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Classify a release asset by what it actually represents
+  function classify(name) {
+    const n = name.toLowerCase();
+    if (n.endsWith('.dmg'))     return { kind: 'installer', platform: 'mac' };
+    if (n.endsWith('.exe'))     return { kind: 'installer', platform: 'win' };
+    if (n.endsWith('.appimage'))return { kind: 'installer', platform: 'linux' };
+    if (n.endsWith('.zip'))     return { kind: 'update-asset', platform: n.includes('mac') ? 'mac' : 'other' };
+    if (n.endsWith('.blockmap'))return { kind: 'update-internal', platform: 'other' };
+    if (n.endsWith('.yml'))     return { kind: 'update-manifest', platform: 'other' };
+    return { kind: 'other', platform: 'other' };
+  }
+
+  // Fetch & render --------------------------------------------------------
+  async function loadStats() {
+    $('loading').classList.remove('hidden');
+    $('content').classList.add('hidden');
+    $('error').classList.add('hidden');
+    $('refresh-btn').disabled = true;
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`);
+      if (!res.ok) {
+        if (res.status === 403) throw new Error('GitHub API rate-limited. Try again in a minute.');
+        if (res.status === 404) throw new Error('Repo not found. Is it public?');
+        throw new Error('GitHub returned ' + res.status);
+      }
+      const releases = await res.json();
+      if (!Array.isArray(releases) || releases.length === 0) {
+        throw new Error('No releases yet — the first one is still building or has not been published.');
+      }
+      render(releases);
+    } catch (e) {
+      $('loading').classList.add('hidden');
+      $('error').textContent = e.message;
+      $('error').classList.remove('hidden');
+    } finally {
+      $('refresh-btn').disabled = false;
+    }
+  }
+
+  function render(releases) {
+    let total = 0, macTotal = 0, winTotal = 0;
+    const macBreakdown = { arm64: 0, x64: 0 };
+    const winBreakdown = { x64: 0 };
+
+    const releaseList = $('release-list');
+    releaseList.innerHTML = '';
+
+    for (const r of releases) {
+      let releaseTotal = 0;
+      const assetRows = [];
+
+      // Sort assets so installers (the meaningful ones) appear first
+      const sortedAssets = [...r.assets].sort((a, b) => {
+        const aKind = classify(a.name).kind;
+        const bKind = classify(b.name).kind;
+        if (aKind === 'installer' && bKind !== 'installer') return -1;
+        if (bKind === 'installer' && aKind !== 'installer') return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      for (const a of sortedAssets) {
+        const c = classify(a.name);
+        const count = a.download_count;
+        assetRows.push({ name: a.name, count, kind: c.kind });
+
+        // Only installers count toward the headline numbers
+        if (c.kind === 'installer') {
+          total += count;
+          releaseTotal += count;
+          if (c.platform === 'mac') {
+            macTotal += count;
+            if (a.name.includes('arm64')) macBreakdown.arm64 += count;
+            else if (a.name.includes('x64')) macBreakdown.x64 += count;
+          } else if (c.platform === 'win') {
+            winTotal += count;
+            winBreakdown.x64 += count;
+          }
+        }
+      }
+
+      // Build release card
+      const row = document.createElement('div');
+      row.className = 'release';
+      row.innerHTML = `
+        <div class="release-head">
+          <span class="release-tag">${escapeHtml(r.tag_name)} <span class="release-total">· ${fmtNum(releaseTotal)} installs</span></span>
+          <span class="release-date">${fmtDate(r.published_at)}</span>
+        </div>
+        <div class="release-assets">
+          ${assetRows.map(a => `
+            <div class="asset">
+              <span class="asset-name">${escapeHtml(a.name)}</span>
+              <span class="asset-count">${fmtNum(a.count)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      releaseList.appendChild(row);
+    }
+
+    // Headline + platform numbers
+    animateTo($('total'), total);
+    animateTo($('mac-num'), macTotal);
+    animateTo($('win-num'), winTotal);
+
+    // Per-platform detail
+    const macParts = [];
+    if (macBreakdown.arm64) macParts.push(`<span>Apple Silicon · ${fmtNum(macBreakdown.arm64)}</span>`);
+    if (macBreakdown.x64)   macParts.push(`<span>Intel · ${fmtNum(macBreakdown.x64)}</span>`);
+    if (macParts.length === 0) macParts.push(`<span>No downloads yet</span>`);
+    $('mac-detail').innerHTML = macParts.join('');
+
+    $('win-detail').innerHTML = winBreakdown.x64
+      ? `<span>x64 · ${fmtNum(winBreakdown.x64)}</span>`
+      : `<span>No downloads yet</span>`;
+
+    // Footer timestamp
+    $('updated').textContent = fmtRelative(new Date().toISOString());
+
+    $('loading').classList.add('hidden');
+    $('content').classList.remove('hidden');
+  }
+
+  // Wire up ---------------------------------------------------------------
+  $('refresh-btn').addEventListener('click', loadStats);
+  loadStats();
+
+  // Live-update the "updated X ago" label every 30s
+  setInterval(() => {
+    const cur = $('updated').textContent;
+    if (cur && cur !== '—') {
+      // Re-parse the implied timestamp by just refetching the latest tick
+      // (simpler than tracking an absolute time)
+      // Skipping for now — refresh button handles it.
+    }
+  }, 30_000);
+</script>
+
+</body>
+</html>
