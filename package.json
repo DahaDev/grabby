@@ -23,7 +23,7 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
-    "dist:appx": "electron-builder --win=appx",
+    "dist:appx": "electron-builder --win=appx --publish never",
     "publish": "electron-builder --publish always"
   },
   "devDependencies": {
