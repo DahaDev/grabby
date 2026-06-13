@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grabby — Privacy Policy</title>
+<link rel="icon" type="image/png" href="../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ea; --bg-card: #ffffff; --ink: #1a1a1a; --ink-soft: #6b6b6b;
+    --rule: #d9d4c7; --accent: #ff4f1f;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #14130f; --bg-card: #1f1e1a; --ink: #f0ece1; --ink-soft: #8a8678; --rule: #2e2c25; --accent: #ff6a3d; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--serif); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 28px 80px; }
+  nav { display: flex; justify-content: space-between; align-items: center; padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 56px; }
+  .brand { font-family: var(--serif); font-weight: 900; font-size: 28px; font-style: italic; letter-spacing: -0.04em; }
+  .brand .dot { color: var(--accent); }
+  nav a { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink-soft); text-decoration: none; }
+  nav a:hover { color: var(--accent); }
+  .label { font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: var(--ink-soft); margin-bottom: 14px; display: block; }
+  h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 5vw, 60px); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 12px; }
+  h1 em { font-style: italic; font-weight: 900; color: var(--accent); }
+  .updated { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 56px; }
+  h2 { font-family: var(--serif); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; margin: 48px 0 16px; }
+  p { margin: 0 0 18px; color: var(--ink); }
+  code { background: var(--rule); padding: 2px 8px; font-family: var(--mono); font-size: 14px; }
+  a { color: var(--accent); }
+  footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="brand">grabby<span class="dot">.</span></div>
+  <a href="../">← Back to site</a>
+</nav>
+
+<span class="label">Privacy Policy</span>
+<h1>The <em>short</em> version: nothing.</h1>
+<div class="updated">Last updated: June 13, 2026</div>
+
+<p>Grabby is a local desktop application. It does not collect, transmit, store, sell, or share any personal information. There is no account system. There is no analytics. There is no telemetry. There is no advertising.</p>
+
+<h2>What Grabby does over the network</h2>
+
+<p>The app makes network requests in only two situations, both essential to its function and both initiated by you:</p>
+
+<p><strong>1. Downloading content you ask for.</strong> When you paste a URL and click Fetch or Download, Grabby (via the bundled <code>yt-dlp</code> engine) contacts the source platform — YouTube, Instagram, TikTok, etc. — to retrieve the video or audio you requested. Grabby does not log or store the URLs you paste. The source platforms have their own privacy practices, which are outside our control.</p>
+
+<p><strong>2. Checking for updates.</strong> Grabby periodically asks GitHub whether a newer version of itself exists. This request includes only generic information GitHub logs for any visitor (IP address, user agent). GitHub's privacy policy applies to this traffic. The check happens on launch and every four hours while the app is open. No personal data leaves your machine.</p>
+
+<h2>What Grabby stores locally</h2>
+
+<p>The app saves a small settings file on your computer — your preferred download folder, browser cookies preference, and similar settings. This file stays on your machine and is never transmitted anywhere. You can delete it at any time by uninstalling the app or removing the application support folder.</p>
+
+<p>Downloaded files are saved to a folder you choose. We have no record of what you download.</p>
+
+<h2>Children's privacy</h2>
+
+<p>Grabby does not knowingly collect any information from anyone, including children under 13. We do not collect information from anyone, period.</p>
+
+<h2>Changes to this policy</h2>
+
+<p>If this policy ever changes, the "Last updated" date above will be revised. Material changes will also be noted in the app's release notes.</p>
+
+<h2>Contact</h2>
+
+<p>For any privacy-related questions, contact us at <a href="mailto:info@artofdaha.com">info@artofdaha.com</a>.</p>
+
+<footer>Art of Daha · <a href="../">grabby</a></footer>
+</div>
+</body>
+</html>
