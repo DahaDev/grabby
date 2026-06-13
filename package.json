@@ -1,10 +1,10 @@
 {
   "name": "grabby",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local video downloader for YouTube, Instagram, TikTok, Snapchat",
   "main": "src/main/main.js",
   "author": {
-    "name": "Daha",
+    "name": "Art of Daha",
     "email": "you@example.com"
   },
   "license": "MIT",
@@ -23,6 +23,7 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
+    "dist:appx": "electron-builder --win=appx",
     "publish": "electron-builder --publish always"
   },
   "devDependencies": {
@@ -36,7 +37,7 @@
     "appId": "com.daha.grabby",
     "productName": "Grabby",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "copyright": "Copyright © 2026 Daha",
+    "copyright": "Copyright © 2026 Art of Daha",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -89,7 +90,7 @@
         { "target": "nsis", "arch": ["x64"] }
       ],
       "icon": "build/icon.ico",
-      "publisherName": "Daha"
+      "publisherName": "Art of Daha"
     },
     "nsis": {
       "oneClick": false,
@@ -98,6 +99,17 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Grabby"
+    },
+    "appx": {
+      "identityName": "ArtofDaha.grabby",
+      "publisher": "CN=766CD26E-01E4-4735-8601-3D0EFC521B25",
+      "publisherDisplayName": "Art of Daha",
+      "applicationId": "Grabby",
+      "displayName": "Grabby",
+      "backgroundColor": "#ff4f1f",
+      "showNameOnTiles": true,
+      "languages": ["en-US"],
+      "addAutoLaunchExtension": false
     },
     "linux": {
       "target": ["AppImage"],

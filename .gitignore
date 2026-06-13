@@ -3,3 +3,11 @@ vendor/
 dist/
 .DS_Store
 *.log
+
+# Intermediate font files used only during icon generation
+build/fraunces*.woff2
+build/fraunces*.ttf
+
+# Local environment overrides
+.env
+.env.local

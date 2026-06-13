@@ -13,13 +13,17 @@ const os = require('os');
 const ROOT = path.join(__dirname, '..');
 
 // ---------- Platform detection ----------
-const PLATFORM = process.platform === 'darwin'
-    ? (process.arch === 'arm64' ? 'mac-arm64' : 'mac-x64')
-  : process.platform === 'win32' ? 'win-x64'
-  : 'linux-x64';
-
-const VENDOR_DIR = path.join(ROOT, 'vendor', PLATFORM);
-fs.mkdirSync(VENDOR_DIR, { recursive: true });
+// On a Mac, we want binaries for BOTH architectures even when the host is
+// arm64, because electron-builder cross-builds both Intel and Apple Silicon
+// DMGs from a single Mac runner. Without this, the x64 DMG ships missing
+// yt-dlp and ffmpeg and the app silently breaks for Intel Mac users.
+const HOST_PLATFORMS = (() => {
+  if (process.platform === 'darwin') {
+    return ['mac-arm64', 'mac-x64'];
+  }
+  if (process.platform === 'win32') return ['win-x64'];
+  return ['linux-x64'];
+})();
 
 // ---------- URLs ----------
 // yt-dlp ships single-file binaries per platform on its GitHub releases.
@@ -67,57 +71,54 @@ function download(url, dest) {
 function exists(p) { try { fs.accessSync(p); return true; } catch { return false; } }
 
 // ---------- yt-dlp ----------
-async function fetchYtdlp() {
-  const ext = PLATFORM === 'win-x64' ? '.exe' : '';
-  const out = path.join(VENDOR_DIR, 'yt-dlp' + ext);
-  if (exists(out)) { console.log('  yt-dlp already present, skipping'); return; }
+async function fetchYtdlp(platform, vendorDir) {
+  const ext = platform === 'win-x64' ? '.exe' : '';
+  const out = path.join(vendorDir, 'yt-dlp' + ext);
+  if (exists(out)) { console.log(`  [${platform}] yt-dlp already present, skipping`); return; }
 
-  console.log('  Downloading yt-dlp...');
-  await download(YTDLP_URLS[PLATFORM], out);
-  if (PLATFORM !== 'win-x64') fs.chmodSync(out, 0o755);
-  console.log('  ✓ yt-dlp installed');
+  console.log(`  [${platform}] Downloading yt-dlp...`);
+  await download(YTDLP_URLS[platform], out);
+  if (platform !== 'win-x64') fs.chmodSync(out, 0o755);
+  console.log(`  [${platform}] ✓ yt-dlp installed`);
 }
 
 // ---------- ffmpeg ----------
-async function fetchFfmpeg() {
-  const ext = PLATFORM === 'win-x64' ? '.exe' : '';
-  const out = path.join(VENDOR_DIR, 'ffmpeg' + ext);
-  if (exists(out)) { console.log('  ffmpeg already present, skipping'); return; }
+async function fetchFfmpeg(platform, vendorDir) {
+  const ext = platform === 'win-x64' ? '.exe' : '';
+  const out = path.join(vendorDir, 'ffmpeg' + ext);
+  if (exists(out)) { console.log(`  [${platform}] ffmpeg already present, skipping`); return; }
 
-  const src = FFMPEG_SOURCES[PLATFORM];
+  const src = FFMPEG_SOURCES[platform];
   const tmp = path.join(os.tmpdir(), 'grabby-ffmpeg-' + Date.now() + (src.type === 'zip' ? '.zip' : '.tar.xz'));
 
-  console.log('  Downloading ffmpeg... (this is the big one, ~30–80 MB)');
+  console.log(`  [${platform}] Downloading ffmpeg... (~30-80 MB)`);
   await download(src.url, tmp);
 
-  console.log('  Extracting ffmpeg...');
+  console.log(`  [${platform}] Extracting ffmpeg...`);
   const extractDir = path.join(os.tmpdir(), 'grabby-ffmpeg-extract-' + Date.now());
   fs.mkdirSync(extractDir, { recursive: true });
 
   if (src.type === 'zip') {
     if (process.platform === 'win32') {
-      // PowerShell's Expand-Archive is the only thing reliably present on stock Windows.
       execSync(`powershell -NoProfile -Command "Expand-Archive -Path '${tmp}' -DestinationPath '${extractDir}' -Force"`, { stdio: 'inherit' });
     } else {
       execSync(`unzip -q -o "${tmp}" -d "${extractDir}"`, { stdio: 'inherit' });
     }
-  } else { // tarxz
+  } else {
     execSync(`tar -xf "${tmp}" -C "${extractDir}"`, { stdio: 'inherit' });
   }
 
-  // Find the ffmpeg binary in the extracted tree.
-  const innerName = PLATFORM === 'win-x64' ? 'ffmpeg.exe' : 'ffmpeg';
+  const innerName = platform === 'win-x64' ? 'ffmpeg.exe' : 'ffmpeg';
   const found = findFile(extractDir, innerName);
   if (!found) throw new Error(`Could not locate ${innerName} in extracted archive at ${extractDir}`);
 
   fs.copyFileSync(found, out);
-  if (PLATFORM !== 'win-x64') fs.chmodSync(out, 0o755);
+  if (platform !== 'win-x64') fs.chmodSync(out, 0o755);
 
-  // Tidy up.
   try { fs.unlinkSync(tmp); } catch {}
   try { fs.rmSync(extractDir, { recursive: true, force: true }); } catch {}
 
-  console.log('  ✓ ffmpeg installed');
+  console.log(`  [${platform}] ✓ ffmpeg installed`);
 }
 
 function findFile(dir, name) {
@@ -136,19 +137,21 @@ function findFile(dir, name) {
 
 // ---------- Run ----------
 (async () => {
-  console.log(`grabby: fetching binaries for ${PLATFORM}`);
-  console.log(`  vendor dir: ${VENDOR_DIR}`);
-  try {
-    await fetchYtdlp();
-    await fetchFfmpeg();
-    console.log('Done. You can now run `npm start`.');
-  } catch (e) {
-    console.error('\n  ERROR:', e.message);
-    console.error('\n  You can install the binaries manually:');
-    console.error(`    yt-dlp → ${YTDLP_URLS[PLATFORM]}`);
-    console.error(`    ffmpeg → ${FFMPEG_SOURCES[PLATFORM].url}`);
-    console.error(`    Put them in: ${VENDOR_DIR}`);
-    console.error('  Then run `npm start`.\n');
-    process.exit(1);
+  console.log(`grabby: fetching binaries for ${HOST_PLATFORMS.join(', ')}`);
+  for (const platform of HOST_PLATFORMS) {
+    const vendorDir = path.join(ROOT, 'vendor', platform);
+    fs.mkdirSync(vendorDir, { recursive: true });
+    try {
+      await fetchYtdlp(platform, vendorDir);
+      await fetchFfmpeg(platform, vendorDir);
+    } catch (e) {
+      console.error(`\n  [${platform}] ERROR:`, e.message);
+      console.error('\n  You can install the binaries manually:');
+      console.error(`    yt-dlp → ${YTDLP_URLS[platform]}`);
+      console.error(`    ffmpeg → ${FFMPEG_SOURCES[platform].url}`);
+      console.error(`    Put them in: ${vendorDir}\n`);
+      process.exit(1);
+    }
   }
+  console.log('Done. You can now run `npm start`.');
 })();

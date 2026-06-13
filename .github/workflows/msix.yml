@@ -1,0 +1,61 @@
+# Manual workflow to build a Microsoft Store MSIX (.appx) package.
+#
+# How to use:
+#   1. Go to the Actions tab on GitHub.
+#   2. Click "Build MSIX" in the left sidebar.
+#   3. Click "Run workflow" → "Run workflow" (green button).
+#   4. Wait ~5 minutes for the build to finish.
+#   5. Download the .appx file from the workflow's "Artifacts" section.
+#   6. Upload that file to Partner Center.
+
+name: Build MSIX
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: npm install
+        env:
+          ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
+
+      - name: Verify binaries downloaded
+        shell: bash
+        run: ls -la vendor/
+
+      - name: Build MSIX package
+        run: npm run dist:appx
+        env:
+          # Don't try to publish to GitHub — Store packages go to Partner Center manually.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload .appx as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grabby-msix
+          path: |
+            dist/*.appx
+            dist/*.msix
+            dist/*.msixupload
+          if-no-files-found: error
+          retention-days: 14

@@ -134,6 +134,10 @@ function buildMenu() {
 // updater would crash without dev-app-update.yml otherwise.
 function setupAutoUpdater() {
   if (!app.isPackaged) return;
+  // Microsoft Store handles updates itself when installed via MSIX.
+  // Running electron-updater inside the Store sandbox will fail and
+  // is grounds for certification rejection.
+  if (process.windowsStore) return;
 
   autoUpdater.autoDownload = false;          // we ask first
   autoUpdater.autoInstallOnAppQuit = true;   // install when user quits
@@ -347,9 +351,13 @@ ipcMain.handle('download', async (event, { url, formatId, isAudio, downloadPlayl
   if (isAudio) {
     args.push('-f', 'bestaudio/best', '-x', '--audio-format', 'mp3', '--audio-quality', '192');
   } else if (!formatId || formatId === 'best') {
-    args.push('-f', 'bv*+ba/b');
+    // Prefer H.264 + AAC so files open in QuickTime / Windows Media Player
+    // without users having to install VLC. Falls back to anything if H.264
+    // isn't available (rare with major platforms).
+    args.push('-f', "bv*[vcodec~='^(avc1|h264)']+ba[acodec~='^(mp4a|aac)']/b[vcodec~='^(avc1|h264)']/bv*+ba/b");
   } else {
-    args.push('-f', `${formatId}+bestaudio/${formatId}/best`);
+    // User picked a specific format. Pair it with AAC when possible.
+    args.push('-f', `${formatId}+ba[acodec~='^(mp4a|aac)']/${formatId}+bestaudio/${formatId}/best`);
   }
 
   if (!downloadPlaylist) args.push('--no-playlist');
