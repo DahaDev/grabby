@@ -292,7 +292,8 @@ ipcMain.handle('probe', async (_event, { url }) => {
   const args = [
     '--dump-single-json',
     '--no-warnings',
-    '--no-playlist',                 // probe only the first video; we'll handle playlists in download
+    '--no-playlist',
+    '--ignore-no-formats-error', // probe only the first video; we'll handle playlists in download
     '--ffmpeg-location', FFMPEG_PATH(),
   ];
   const cookiesBrowser = store.get('cookiesBrowser');
@@ -307,7 +308,7 @@ ipcMain.handle('probe', async (_event, { url }) => {
   let playlistCount = null;
   if (/[?&]list=/.test(url)) {
     try {
-      const plArgs = ['--flat-playlist', '--dump-single-json', '--no-warnings'];
+      const plArgs = ['--flat-playlist', '--dump-single-json', '--no-warnings', '--ignore-no-formats-error'];
       if (cookiesBrowser && cookiesBrowser !== 'none') plArgs.push('--cookies-from-browser', cookiesBrowser);
       plArgs.push(url.trim());
       const pl = await runYtDlpJSON(plArgs);
